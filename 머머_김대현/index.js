@@ -3,6 +3,9 @@ import { response } from './config/response.js';
 import { tempRouter } from './src/routes/temp.route.js';
 import { BaseError } from './config/error.js';
 import { status } from './config/response.status.js';
+import { userRouter } from './src/routes/user.route.js';
+import { specs } from './swagger/swagger.config.js';
+import SwaggerUi from 'swagger-ui-express';
 
 const app = express();
 const port = 3000;
@@ -13,11 +16,14 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
 app.use('/temp', tempRouter);
+app.use('/api-docs', SwaggerUi.serve, SwaggerUi.setup(specs));
 
 app.use((req, res, next) => {
     const err = new BaseError(status.NOT_FOUND);
     next(err);
 });
+
+app.use('/user', userRouter);
 
 app.use((err, req, res, next) => {
     console.log(err.data.status);
